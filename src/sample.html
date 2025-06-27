@@ -6,12 +6,41 @@
 <script>
 function init()
 {
-	let slidelock_obj = new slidelock();
+
+	let slidelock_obj = new slidelock("滑动解锁发送验证码",30,150);
+	
 	slidelock_obj.bind(".slidebutton");
 	
+	//自定义条件判断方法
+	slidelock.condition = function()
+	{
+		var mobilephone = document.querySelector("#phone").value.trim();
+		if (mobilephone=="")
+		{
+			alert("请输入手机号码！")
+			return false;
+		}
+		//手机号码正则表达式校验（中国号码不含区号）
+		const phoneReg =/^1[3456789]\d{9}$/;
+		if (!phoneReg.test(mobilephone))
+		{
+			alert("请输入正确的手机号码！")
+			return false;
+		}
+		return true;
+	}
+
+	//解锁事件
 	document.addEventListener("sliderunlock",
-		function(e){alert(e.detail.message());},
+		function(e){
+			alert(e.detail.message());
+			console.log(e.detail.target());
+			e.detail.target().style.display="none";
+			document.querySelector('#btnSmsSend').style.display = "block";
+		
+		},
 		{ passive: false });
+
 }
 
 
@@ -21,7 +50,47 @@ function init()
 </head>
 <body onload="init();">
 <div>
-	<div class="slidebutton"></div>
+<h1>网页滑动锁</h1>
+<div>作者：phil</div>
+<ul>
+	<li>
+	* 创建日期：2024-10-01
+	</li>
+	<li>
+	* 修改日期：2025-06-27
+	</li>
+</ul>
+</div>
+<div>
+<h3>2024-10-01</h3>
+<ul>
+	<li>
+1、创建
+	</li>
+</ul>
+</div>
+<div>
+<h3>2025-06-26</h3>
+<ul>
+	<li>
+1、新增提示文字、高度、宽度初始化参数
+	</li>
+	<li>
+2、新增自定义条件判断方法
+	</li>
+</ul>
+</div>
+
+<div>
+	<h2>输入框联动样例</h2>
+	<div>含手机号码正则表达式校验</div>
+	<div style="
+    display: flex;
+    align-items: center;">
+		<div><span>手机号码：</span> <input type="text" value="" name="phone" id="phone" style="width:180px"> </div>
+		<div class="slidebutton"></div>
+		<input type="button" id="btnSmsSend" value="点击发送验证码" onclick="doSend()" style="width:120px; margin-left:5px; height:27px;display:none;">
+	</div>
 </div>
 </body>
 </html>

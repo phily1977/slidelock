@@ -1,4 +1,9 @@
-/*滑块锁,PHIL,2024-10-01*/
+/*
+* 滑块锁,PHIL,
+* 创建日期：2024-10-01
+* 修改日期：2025-06-26
+*
+*/
 
 class slidelock{
 
@@ -7,23 +12,30 @@ class slidelock{
 	static successMoveDistance;
 	
 	//构造函数
-	constructor()
+	constructor(tips="滑动解锁",height=30,width=180)
 	{
 		this.slidelockobj = document.createElement("div");
 		this.slidelockobj.id = "slidelockobj";
+		this.slidelockobj.style.height=height+"px";
+		this.slidelockobj.style.width=width+"px";
 		
 		var bgDiv = document.createElement("div"); 
 		bgDiv.className = "bgcolor";
+		bgDiv.style.height=height+"px";
+		bgDiv.style.width = width+"px";
 		this.slidelockobj.appendChild(bgDiv);
 		
 		var txtDiv = document.createElement("div"); 
 		txtDiv.className = "txt";
-		txtDiv.innerHTML = "滑动解锁";
+		txtDiv.style.height=height+"px";
+		txtDiv.style.lineHeight=height+"px";
+		txtDiv.innerHTML = tips;
 		
 		this.slidelockobj.appendChild(txtDiv);
 		
 		this.slider = document.createElement("div"); 
 		this.slider.className = "slider";
+		this.slider.style.height=(height-2)+"px";
 		
 		var slideIcon = document.createElement("i"); 
 		slideIcon.className = "iconfont icon-double-right";
@@ -31,9 +43,6 @@ class slidelock{
 		
 		this.slidelockobj.appendChild(this.slider);
 		
-		
-		
-
 	}
 	
 	//绑定网页对象
@@ -49,13 +58,26 @@ class slidelock{
 		//添加事件
 		this.slider.addEventListener("mousedown", slidelock.sliderhoverHandler,{ passive: false });
 		this.slider.addEventListener("touchstart", slidelock.sliderhoverHandler,{ passive: false });
+		
+
+		
+	}
+	
+	static condition()
+	{
+		return true;
 	}
 	
 	//滑块点击选中事件
 	static sliderhoverHandler(e){
+			//条件判断
+			if (slidelock.condition()==false)
+				return;
+			
 			e.preventDefault();
 			
 			console.log(e.target.parentElement);
+			
 			var bgColor = e.target.parentElement.querySelector(".bgColor");
             bgColor.style.transition = "";
             e.target.style.transition = "";
@@ -127,11 +149,17 @@ class slidelock{
 			document.dispatchEvent(
 				new CustomEvent("sliderunlock", {
 				  bubbles: true,
-				  detail: { message: () => "unlock success." },
-				}),
-			  );
+				  detail: { message: () => "unlock success.",
+							target:() => e.target.parentElement
+				  },
+				})
+			);
 
+			
+			
 		}
+
+		
 	}
 
 	//滑块释放事件
